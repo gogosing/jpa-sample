@@ -1,6 +1,9 @@
 package me.gogosing.persistence.entity;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.gogosing.persistence.converter.BooleanToCharConverter;
 import org.hibernate.annotations.Fetch;
@@ -17,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,11 +35,14 @@ import java.util.Set;
     name = "ALBUM",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"ALBUM_ID"})}
 )
-public class AlbumEntity {
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class AlbumEntity implements Serializable {
 
     /**
      * 레코드 식별자.
      */
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ALBUM_KEY")
@@ -44,18 +51,21 @@ public class AlbumEntity {
     /**
      * 레코드 대체 식별자.
      */
+    @EqualsAndHashCode.Include
     @Column(name = "ALBUM_ID", nullable = false, columnDefinition = "char(14)")
     private String id;
 
     /**
      * 제목.
      */
+    @EqualsAndHashCode.Include
     @Column(name = "TITLE", nullable = false, length = 150)
     private String title;
 
     /**
      * 삭제여부.
      */
+    @EqualsAndHashCode.Include
     @Convert(converter = BooleanToCharConverter.class)
     @Column(name = "DELETED", nullable = false, columnDefinition = "char(1)")
     private boolean deleted = false;
@@ -63,6 +73,7 @@ public class AlbumEntity {
     /**
      * 레코드 생성일시.
      */
+    @EqualsAndHashCode.Include
     @Column(name = "CREATE_UTC", nullable = false, updatable = false)
     private ZonedDateTime createOn;
 
@@ -77,4 +88,15 @@ public class AlbumEntity {
             orphanRemoval = true
     )
     private Set<SongEntity> songEntities = new LinkedHashSet<>();
+
+    @Builder
+    public AlbumEntity(Long key, String id, String title, boolean deleted,
+                       ZonedDateTime createOn, Set<SongEntity> songEntities) {
+        this.key = key;
+        this.id = id;
+        this.title = title;
+        this.deleted = deleted;
+        this.createOn = createOn;
+        this.songEntities = songEntities;
+    }
 }
