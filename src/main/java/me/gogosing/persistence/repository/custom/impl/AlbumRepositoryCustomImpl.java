@@ -2,24 +2,31 @@ package me.gogosing.persistence.repository.custom.impl;
 
 import com.querydsl.jpa.JPQLQuery;
 import me.gogosing.persistence.entity.AlbumEntity;
-import me.gogosing.persistence.entity.QAlbumEntity;
-import me.gogosing.persistence.entity.QSongEntity;
 import me.gogosing.persistence.repository.custom.AlbumRepositoryCustom;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class AlbumRepositoryCustomImpl extends QuerydslRepositorySupport implements AlbumRepositoryCustom {
+import static me.gogosing.persistence.entity.QAlbumEntity.albumEntity;
+import static me.gogosing.persistence.entity.QSongEntity.songEntity;
 
-    private final QAlbumEntity albumEntity = QAlbumEntity.albumEntity;
-    private final QSongEntity songEntity = QSongEntity.songEntity;
+public class AlbumRepositoryCustomImpl extends QuerydslRepositorySupport
+        implements AlbumRepositoryCustom, InitializingBean {
 
     public AlbumRepositoryCustomImpl() {
         super(AlbumEntity.class);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(getQuerydsl(), "The QueryDsl must not be null.");
     }
 
     @Override
@@ -51,19 +58,18 @@ public class AlbumRepositoryCustomImpl extends QuerydslRepositorySupport impleme
     @Override
     public Page<AlbumEntity> getPaginatedAlbumEntities(Pageable pageable) {
         JPQLQuery<AlbumEntity> query = from(albumEntity)
-                .where(
-                        albumEntity.deleted.isFalse()
-                );
+                .where(albumEntity.deleted.isFalse());
 
-        List<AlbumEntity> results = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(albumEntity.createOn.desc())
-                .fetch();
+        final long totalCount = query
+                .select(albumEntity).distinct().fetchCount();
 
-        long totalCount = 0L;
-        if (!results.isEmpty()) {
-            totalCount = query.select(albumEntity).distinct().fetchCount();
+        List<AlbumEntity> results = Collections.emptyList();
+        if (totalCount > 0L) {
+            results = query
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .orderBy(albumEntity.createOn.desc())
+                    .fetch();
         }
 
         return new PageImpl<>(results, pageable, totalCount);

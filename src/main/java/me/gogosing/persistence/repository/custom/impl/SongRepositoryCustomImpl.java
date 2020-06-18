@@ -1,21 +1,27 @@
 package me.gogosing.persistence.repository.custom.impl;
 
 import com.querydsl.jpa.JPQLQuery;
-import me.gogosing.persistence.entity.QAlbumEntity;
-import me.gogosing.persistence.entity.QSongEntity;
 import me.gogosing.persistence.entity.SongEntity;
 import me.gogosing.persistence.repository.custom.SongRepositoryCustom;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
-public class SongRepositoryCustomImpl extends QuerydslRepositorySupport implements SongRepositoryCustom {
+import static me.gogosing.persistence.entity.QAlbumEntity.albumEntity;
+import static me.gogosing.persistence.entity.QSongEntity.songEntity;
 
-    private final QSongEntity songEntity = QSongEntity.songEntity;
-    private final QAlbumEntity albumEntity = QAlbumEntity.albumEntity;
+public class SongRepositoryCustomImpl extends QuerydslRepositorySupport
+        implements SongRepositoryCustom, InitializingBean {
 
     public SongRepositoryCustomImpl() {
         super(SongEntity.class);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(getQuerydsl(), "The QueryDsl must not be null.");
     }
 
     @Override
