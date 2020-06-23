@@ -46,7 +46,7 @@ public class PagingFilterDeserializer extends StdDeserializer<Map<String, Object
                         filterParser.readValueAs(FilterNumericRange.class)
                     );
                 } else {
-                    log.warn("[%s]는 정의되지 않은 유형입니다. 추가 구현이 필요 합니다.");
+                    log.warn("[{}]는 정의되지 않은 유형입니다. 추가 구현이 필요 합니다.", nodeEntry.getKey());
                 }
             } else if (valueNode.isArray()) {
                 filters.put(
