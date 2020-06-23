@@ -53,7 +53,7 @@ public class PagingFilterDeserializer extends StdDeserializer<Map<String, Object
                     nodeEntry.getKey(),
                     StreamSupport
                         .stream(valueNode.spliterator(), false)
-                        .map(element -> element.textValue())
+                        .map(JsonNode::textValue)
                         .collect(Collectors.toList())
                 );
             } else if (valueNode.isTextual()) {
