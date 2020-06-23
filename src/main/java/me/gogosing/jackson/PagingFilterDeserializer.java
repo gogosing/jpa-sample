@@ -59,7 +59,7 @@ public class PagingFilterDeserializer extends StdDeserializer<Map<String, Object
             } else if (valueNode.isTextual()) {
                 filters.put(
                     nodeEntry.getKey(),
-                    nodeEntry.getValue().textValue()
+                    valueNode.textValue()
                 );
             }
         }
