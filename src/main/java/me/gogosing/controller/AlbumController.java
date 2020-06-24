@@ -1,11 +1,14 @@
 package me.gogosing.controller;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.gogosing.model.Album;
-import me.gogosing.model.PaginationRequest;
 import me.gogosing.model.PaginationResult;
 import me.gogosing.service.AlbumService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * 앨범 관련 Controller.
@@ -50,14 +51,18 @@ public class AlbumController {
 
     /**
      * 페이징 처리된 앨범 목록 조회.
-     * @param paginationRequest 페이징 요청 정보.
+     * @param pageable 페이징 정보.
      * @return 페이징 처리된 앨범 목록.
      */
     @PostMapping("/albums")
     public PaginationResult getAlbumPagination(
-            @RequestBody PaginationRequest paginationRequest
+            @PageableDefault(
+                sort = {"createOn"},
+                direction = Direction.DESC,
+                page = 0, size = 10
+            ) Pageable pageable
     ) {
-        return albumService.getAlbumPagination(paginationRequest);
+        return albumService.getAlbumPagination(pageable);
     }
 
     /**

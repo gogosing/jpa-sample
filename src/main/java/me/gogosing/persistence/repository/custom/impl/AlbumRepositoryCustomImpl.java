@@ -1,6 +1,12 @@
 package me.gogosing.persistence.repository.custom.impl;
 
+import static me.gogosing.persistence.entity.QAlbumEntity.albumEntity;
+import static me.gogosing.persistence.entity.QSongEntity.songEntity;
+
 import com.querydsl.jpa.JPQLQuery;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import me.gogosing.persistence.entity.AlbumEntity;
 import me.gogosing.persistence.repository.custom.AlbumRepositoryCustom;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,13 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.Assert;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static me.gogosing.persistence.entity.QAlbumEntity.albumEntity;
-import static me.gogosing.persistence.entity.QSongEntity.songEntity;
 
 public class AlbumRepositoryCustomImpl extends QuerydslRepositorySupport
         implements AlbumRepositoryCustom, InitializingBean {
@@ -65,11 +64,9 @@ public class AlbumRepositoryCustomImpl extends QuerydslRepositorySupport
 
         List<AlbumEntity> results = Collections.emptyList();
         if (totalCount > 0L) {
-            results = query
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .orderBy(albumEntity.createOn.desc())
-                    .fetch();
+            results = getQuerydsl()
+                .applyPagination(pageable, query)
+                .fetch();
         }
 
         return new PageImpl<>(results, pageable, totalCount);

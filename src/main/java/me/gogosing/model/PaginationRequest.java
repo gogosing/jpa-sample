@@ -3,11 +3,10 @@ package me.gogosing.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import me.gogosing.jackson.PagingFilterDeserializer;
-
-import java.util.Map;
 
 /**
  * 페이징 요청 정보 모델.
@@ -16,12 +15,6 @@ import java.util.Map;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaginationRequest {
-
-    /**
-     * 페이징 정보.
-     */
-    @JsonProperty(value = "paging")
-    private Paging paging;
 
     /**
      * 검색 필터 정보.

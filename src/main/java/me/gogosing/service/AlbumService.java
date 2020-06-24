@@ -1,8 +1,8 @@
 package me.gogosing.service;
 
 import me.gogosing.model.Album;
-import me.gogosing.model.PaginationRequest;
 import me.gogosing.model.PaginationResult;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 앨범 서비스 Interface.
@@ -25,10 +25,10 @@ public interface AlbumService {
 
     /**
      * 페이징 처리된 앨범 목록 조회.
-     * @param paginationRequest 페이징 정보.
+     * @param pageable 페이징 정보.
      * @return 페이징 처리된 앨범 목록 정보.
      */
-    PaginationResult<Album> getAlbumPagination(PaginationRequest paginationRequest);
+    PaginationResult<Album> getAlbumPagination(Pageable pageable);
 
     /**
      * 앨범 정보 수정.

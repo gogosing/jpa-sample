@@ -2,11 +2,10 @@ package me.gogosing.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 페이징 결과 정보 모델.
@@ -19,14 +18,8 @@ public class PaginationResult<T> {
     /**
      * 페이징 정보.
      */
-    @JsonProperty(value = "paging")
-    private Paging paging;
-
-    /**
-     * 검색 필터 정보.
-     */
-    @JsonProperty(value = "filters")
-    private Map<String, Object> filters;
+    @JsonProperty(value = "pageable")
+    private Pageable pageable;
 
     /**
      * 게시물 목록.

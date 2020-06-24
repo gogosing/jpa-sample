@@ -1,22 +1,5 @@
 package me.gogosing.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import me.gogosing.component.GenerateIdComponent;
-import me.gogosing.exception.NotFoundException;
-import me.gogosing.model.Album;
-import me.gogosing.model.PaginationRequest;
-import me.gogosing.model.PaginationResult;
-import me.gogosing.model.Paging;
-import me.gogosing.model.Song;
-import me.gogosing.persistence.entity.AlbumEntity;
-import me.gogosing.persistence.entity.SongEntity;
-import me.gogosing.persistence.repository.AlbumRepository;
-import me.gogosing.service.AlbumService;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +7,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.gogosing.component.GenerateIdComponent;
+import me.gogosing.exception.NotFoundException;
+import me.gogosing.model.Album;
+import me.gogosing.model.PaginationResult;
+import me.gogosing.model.Song;
+import me.gogosing.persistence.entity.AlbumEntity;
+import me.gogosing.persistence.entity.SongEntity;
+import me.gogosing.persistence.repository.AlbumRepository;
+import me.gogosing.service.AlbumService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -82,20 +79,10 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaginationResult<Album> getAlbumPagination(final PaginationRequest paginationRequest) {
-        final var pageRequest = PageRequest.of(
-                paginationRequest.getPaging().getNo() - 1,
-                paginationRequest.getPaging().getLimit()
-        );
-
-        final var paginatedResult = albumRepository.getPaginatedAlbumEntities(pageRequest);
+    public PaginationResult<Album> getAlbumPagination(final Pageable pageable) {
+        final var paginatedResult = albumRepository.getPaginatedAlbumEntities(pageable);
 
         final var totalElements = paginatedResult.getTotalElements();
-        final var paging = Paging.builder()
-                .no(paginationRequest.getPaging().getNo())
-                .limit(paginationRequest.getPaging().getLimit())
-                .total(totalElements)
-                .build();
 
         List<Album> albumList = Collections.emptyList();
         if (totalElements > 0L) {
@@ -118,8 +105,7 @@ public class AlbumServiceImpl implements AlbumService {
         }
 
         final var paginationResult = new PaginationResult<Album>();
-        paginationResult.setPaging(paging);
-        paginationResult.setFilters(paginationRequest.getFilters());
+        paginationResult.setPageable(pageable);
         paginationResult.setData(albumList);
 
         return paginationResult;
